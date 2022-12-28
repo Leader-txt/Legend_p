@@ -1,0 +1,14 @@
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\test.dll
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\test.pdb
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\OTAPI.dll
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\TerrariaServer.exe
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\TShockAPI.dll
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\Newtonsoft.Json.dll
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\OTAPI.pdb
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\TerrariaServer.pdb
+C:\Users\32512\Documents\Code\Legend\test\bin\Debug\Newtonsoft.Json.xml
+C:\Users\32512\Documents\Code\Legend\test\obj\Debug\test.csproj.AssemblyReference.cache
+C:\Users\32512\Documents\Code\Legend\test\obj\Debug\test.csproj.CoreCompileInputs.cache
+C:\Users\32512\Documents\Code\Legend\test\obj\Debug\test.csproj.CopyComplete
+C:\Users\32512\Documents\Code\Legend\test\obj\Debug\test.dll
+C:\Users\32512\Documents\Code\Legend\test\obj\Debug\test.pdb
