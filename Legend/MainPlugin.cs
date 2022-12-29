@@ -22,7 +22,7 @@ namespace Legend
         public override string Name => "Legend";
         public override string Description => English ? "Legend-A role play game plugin for TShock" : "传奇-RPG插件";
         public override string Author => "Leader";
-        public override Version Version => new Version(1, 0, 1, 0);
+        public override Version Version => new Version(1, 1, 0, 0);
         #region GlobalValues
         public static Dictionary<string, User> Users = new Dictionary<string, User>();
         public static int Tick = 0;
