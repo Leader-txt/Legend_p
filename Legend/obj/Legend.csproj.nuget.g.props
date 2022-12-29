@@ -13,4 +13,16 @@
     <SourceRoot Include="C:\Users\32512\.nuget\packages\" />
     <SourceRoot Include="C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <None Include="$(NuGetPackageRoot)tshock\5.1.3\contentFiles\any\net6.0\HttpServer.dll" Condition="Exists('$(NuGetPackageRoot)tshock\5.1.3\contentFiles\any\net6.0\HttpServer.dll')">
+      <NuGetPackageId>TShock</NuGetPackageId>
+      <NuGetPackageVersion>5.1.3</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>HttpServer.dll</TargetPath>
+      <Private>True</Private>
+      <Link>HttpServer.dll</Link>
+    </None>
+  </ItemGroup>
 </Project>
