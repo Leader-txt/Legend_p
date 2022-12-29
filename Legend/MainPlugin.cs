@@ -18,7 +18,7 @@ namespace Legend
     [ApiVersion(2, 1)]
     public class MainPlugin : TerrariaPlugin
     {
-        private bool English => Language.ActiveCulture.LegacyId == 1;
+        public static bool English => Language.ActiveCulture.LegacyId == 1;
         public override string Name => "Legend";
         public override string Description => English ? "Legend-A role play game plugin for TShock" : "传奇-RPG插件";
         public override string Author => "Leader";
