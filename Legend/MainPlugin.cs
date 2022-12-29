@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.Localization;
 using TerrariaApi.Server;
 using TShockAPI;
 using Z.Expressions;
@@ -17,8 +18,9 @@ namespace Legend
     [ApiVersion(2, 1)]
     public class MainPlugin : TerrariaPlugin
     {
+        private bool English => Language.ActiveCulture.LegacyId == 1;
         public override string Name => "Legend";
-        public override string Description => "传奇-RPG插件";
+        public override string Description => English ? "Legend-A role play game plugin for TShock" : "传奇-RPG插件";
         public override string Author => "Leader";
         public override Version Version => new Version(1, 0, 1, 0);
         #region GlobalValues
@@ -96,10 +98,10 @@ namespace Legend
         {
             if (TShock.Players[e.ID].Name == e.Player.Name)
                 return;
-            if (Clan.Get(Users[TShock.Players[e.ID].Name].Clan)!=null&&Users[TShock.Players[e.ID].Name].Clan == Users[e.Player.Name].Clan&&e.PVP)
+            if (Clan.Get(Users[TShock.Players[e.ID].Name].Clan) != null && Users[TShock.Players[e.ID].Name].Clan == Users[e.Player.Name].Clan && e.PVP)
             {
                 e.Handled = true;
-                e.Player.SendErrorMessage("公会成员间禁止pvp!");
+                e.Player.SendErrorMessage(English ? "You can't hurt the member of your clan!" : "公会成员间禁止pvp!");
             }
         }
 
@@ -107,9 +109,18 @@ namespace Legend
         {
             if (args.Parameters.Count == 0)
             {
-                args.Player.SendInfoMessage("/legadm reset,重置所有数据");
-                args.Player.SendInfoMessage("/legadm exp 玩家名 经验值，修改经验值");
-                args.Player.SendInfoMessage("/legadm level 玩家名 等级，修改等级");
+                if (English)
+                {
+                    args.Player.SendInfoMessage("/legadm reset,Reset all of the data");
+                    args.Player.SendInfoMessage("/legadm exp [Name] [Experience]，Edit the value of player's experience");
+                    args.Player.SendInfoMessage("/legadm level [Name] [Level]，Edit the value of player's level.");
+                }
+                else
+                {
+                    args.Player.SendInfoMessage("/legadm reset,重置所有数据");
+                    args.Player.SendInfoMessage("/legadm exp 玩家名 经验值，修改经验值");
+                    args.Player.SendInfoMessage("/legadm level 玩家名 等级，修改等级");
+                }
                 return;
             }
             switch (args.Parameters[0])
@@ -121,11 +132,11 @@ namespace Legend
                         {
                             user.Level = int.Parse(args.Parameters[2]);
                             user.Update("Level");
-                            args.Player.SendSuccessMessage("修改成功！");
+                            args.Player.SendSuccessMessage(English ? "Edit successfully!" : "修改成功！");
                         }
                         else
                         {
-                            args.Player.SendErrorMessage("查无此人！");
+                            args.Player.SendErrorMessage(English ? "Unable to find the player!" : "查无此人！");
                         }
                     }
                     break;
@@ -136,11 +147,11 @@ namespace Legend
                         {
                             user.Exp = int.Parse(args.Parameters[2]);
                             user.Update("Exp");
-                            args.Player.SendSuccessMessage("修改成功！");
+                            args.Player.SendSuccessMessage(English ? "Edit successfully!" : "修改成功！");
                         }
                         else
                         {
-                            args.Player.SendErrorMessage("查无此人！");
+                            args.Player.SendErrorMessage(English ? "Unable to find the player!" : "查无此人！");
                         }
                     }
                     break;
@@ -149,7 +160,7 @@ namespace Legend
                         User.Delete();
                         Shop.Delete();
                         Clan.Delete();
-                        args.Player.SendSuccessMessage("重置数据成功");
+                        args.Player.SendSuccessMessage(English ? "Reset data successfully!" : "重置数据成功");
                     }
                     break;
             }
@@ -182,7 +193,7 @@ namespace Legend
                     if (user.Level < config.MaxLevel)
                     {
                         var job = config.Jobs.ToList().Find(x => x.Name == user.Job);
-                        int levelup = Utils.GetNextLevelExp(user.Level+1);
+                        int levelup = Utils.GetNextLevelExp(user.Level + 1);
                         if (user.Exp >= levelup)
                         {
                             user.Exp -= levelup;
@@ -225,7 +236,7 @@ namespace Legend
             var plr = TShock.Players[args.Who];
             var user = Users[plr.Name];
             var clan = user.GetClan();
-            string text = (clan == null ? "" : $"[{clan.Prefix}]") + (user.Level == -1 ? "[无职业]".Color("00ff00") : $"[{user.Job} lv{user.Level} exp{user.Exp}]") + plr.Name + ":" + args.Text;
+            string text = (clan == null ? "" : $"[{clan.Prefix}]") + (user.Level == -1 ? (English ? "[No Job]" : "[无职业]").Color("00ff00") : $"[{user.Job} lv{user.Level} exp{user.Exp}]") + plr.Name + ":" + args.Text;
             TShock.Utils.Broadcast(text, Color.White);
         }
 
@@ -236,14 +247,14 @@ namespace Legend
             var clan = user.GetClan();
             clan.RegionID = -1;
             clan.Update("RegionID");
-            clan.Say("领地已销毁！");
+            clan.Say(English ? "Region has been destoried!" : "领地已销毁！");
         }
 
         private void OnNetGreetPlayer(GreetPlayerEventArgs args)
         {
             var plr = TShock.Players[args.Who];
             var list = User.Get(new Dictionary<string, object>() { { "Name", plr.Name } });
-            var user=new User() { Name = plr.Name };
+            var user = new User() { Name = plr.Name };
             if (list.Count == 0)
             {
                 user.MaxSkill = Config.GetConfig().MaxSkill;
@@ -254,14 +265,17 @@ namespace Legend
             {
                 Users.Add(plr.Name, list[0]);
             }
-            user=Users[plr.Name];
+            user = Users[plr.Name];
             var shops = Shop.Get(new Dictionary<string, object> { { "Seller", user.Name }, { "SoldOut", true }, { "Clan", user.Clan } });
             if (shops.Count > 0)
             {
                 foreach (var shop in shops)
                 {
                     plr.GiveItem(shop.Price.NetID, shop.Price.Stack);
-                    plr.SendSuccessMessage($"您的商品{shop.SellItem}已售出，请查收！");
+                    if (English)
+                        plr.SendSuccessMessage($"Your goods:{shop.SellItem} has sold out，please check out it！");
+                    else
+                        plr.SendSuccessMessage($"您的商品{shop.SellItem}已售出，请查收！");
                     shop.Delete("id", "Clan");
                 }
             }
@@ -276,10 +290,20 @@ namespace Legend
             }
             if (args.Parameters.Count == 0)
             {
-                args.Player.SendInfoMessage("/legend clan,公会命令");
-                args.Player.SendInfoMessage("/legend shop,交易系统");
-                args.Player.SendInfoMessage("/legend skill,技能");
-                args.Player.SendInfoMessage("/legend job,职业");
+                if (English)
+                {
+                    args.Player.SendInfoMessage("/legend clan,clan commands");
+                    args.Player.SendInfoMessage("/legend shop,trade system commands");
+                    args.Player.SendInfoMessage("/legend skill,ability commands");
+                    args.Player.SendInfoMessage("/legend job,job commands");
+                }
+                else
+                {
+                    args.Player.SendInfoMessage("/legend clan,公会命令");
+                    args.Player.SendInfoMessage("/legend shop,交易系统");
+                    args.Player.SendInfoMessage("/legend skill,技能");
+                    args.Player.SendInfoMessage("/legend job,职业");
+                }
                 return;
             }
             var user = Users[args.Player.Name];
@@ -287,23 +311,35 @@ namespace Legend
             {
                 case "skill":
                     {
-                        if (user.Level!=-1)
+                        if (user.Level != -1)
                         {
                             if (args.Parameters.Count == 1)
                             {
-                                args.Player.SendInfoMessage("/legend skill list，列出所有可选技能");
-                                args.Player.SendInfoMessage("/legend skill info 技能索引，查看技能详细信息");
-                                args.Player.SendInfoMessage("/legend skill learn 技能索引,学习指定技能");
-                                args.Player.SendInfoMessage("/legend skill state,当前技能状态");
-                                args.Player.SendInfoMessage("/legend skill upg 技能id,升级技能");
-                                args.Player.SendInfoMessage("/legend skill forget 技能id，遗忘技能");
+                                if (English)
+                                {
+                                    args.Player.SendInfoMessage("/legend skill list，list all of the abilities you can choose");
+                                    args.Player.SendInfoMessage("/legend skill info [Index]，check out the detailed information of the skill");
+                                    args.Player.SendInfoMessage("/legend skill learn [Index],learn selected ability");
+                                    args.Player.SendInfoMessage("/legend skill state,show the current state of your skills");
+                                    args.Player.SendInfoMessage("/legend skill upg [id],upgrade your skills");
+                                    args.Player.SendInfoMessage("/legend skill forget [id]，forget the selected skill");
+                                }
+                                else
+                                {
+                                    args.Player.SendInfoMessage("/legend skill list，列出所有可选技能");
+                                    args.Player.SendInfoMessage("/legend skill info 技能索引，查看技能详细信息");
+                                    args.Player.SendInfoMessage("/legend skill learn 技能索引,学习指定技能");
+                                    args.Player.SendInfoMessage("/legend skill state,当前技能状态");
+                                    args.Player.SendInfoMessage("/legend skill upg 技能id,升级技能");
+                                    args.Player.SendInfoMessage("/legend skill forget 技能id，遗忘技能");
+                                }
                                 return;
                             }
                             switch (args.Parameters[1])
                             {
                                 case "forget":
                                     {
-                                        int index=int.Parse(args.Parameters[2]);
+                                        int index = int.Parse(args.Parameters[2]);
                                         user.Skill.RemoveAt(index);
                                         user.Update("Skill");
                                         args.Player.SendSuccessMessage("遗忘技能成功！");
@@ -311,7 +347,7 @@ namespace Legend
                                     break;
                                 case "upg":
                                     {
-                                        int index=int.Parse(args.Parameters[2]);
+                                        int index = int.Parse(args.Parameters[2]);
                                         var config = Config.GetConfig();
                                         var skill = config.Skills[user.Skill[index].Item1];
                                         var level = user.Skill[index].Item2;
@@ -336,7 +372,7 @@ namespace Legend
                                         int i = 0;
                                         var config = Config.GetConfig();
                                         args.Player.SendInfoMessage($"已学习技能数：{user.Skill.Count}/{user.MaxSkill}");
-                                        foreach(var s in user.Skill)
+                                        foreach (var s in user.Skill)
                                         {
                                             var skill = config.Skills[user.Skill[i].Item1];
                                             var level = user.Skill[i].Item2;
@@ -354,7 +390,7 @@ namespace Legend
                                             args.Player.SendErrorMessage("您已达到技能学习上限！");
                                             return;
                                         }
-                                        int index=int.Parse(args.Parameters[2]);
+                                        int index = int.Parse(args.Parameters[2]);
                                         var config = Config.GetConfig();
                                         if (user.Skill.Select(x => x.Item1).Contains(index))
                                         {
@@ -380,9 +416,9 @@ namespace Legend
                                     break;
                                 case "info":
                                     {
-                                        int index=int.Parse(args.Parameters[2]);
-                                        var config=Config.GetConfig();
-                                        var skill=config.Skills[index];
+                                        int index = int.Parse(args.Parameters[2]);
+                                        var config = Config.GetConfig();
+                                        var skill = config.Skills[index];
                                         args.Player.SendInfoMessage($"技能:{skill.Name} [{(skill.CanUse(user.Job) ? "可用".Color("00FF00") : "不可用".Color("FF0000"))}]\n" +
                                             $"允许使用职业:{(skill.Jobs.Contains("-1") ? "所有" : string.Join(",", skill.Jobs))}\n" +
                                             $"允许使用武器:{(skill.Weapons.Contains(-1) ? "所有" : string.Join(",", skill.Weapons.Select(x => $"[i:{x}]{Lang.GetItemName(x)}")))}\n" +
@@ -433,7 +469,7 @@ namespace Legend
                                     user.Buff = new int[0];
                                     user.SkillNum = 0;
                                     user.Skill.Clear();
-                                    user.Update("Job","Level","Skill","Buff","SkillNum");
+                                    user.Update("Job", "Level", "Skill", "Buff", "SkillNum");
                                     args.Player.SendSuccessMessage("已成功遗忘职业！");
                                 }
                                 break;
@@ -447,7 +483,7 @@ namespace Legend
                                     var config = Config.GetConfig();
                                     args.Player.SendInfoMessage($"{user.Job} lv{user.Level}/{config.MaxLevel}\n" +
                                         $"exp:{user.Exp}\n" +
-                                        (user.Level==config.MaxLevel?"已升至最高等级！":$"升级到下一级还需:{Utils.GetNextLevelExp(user.Level + 1) - user.Exp}"));
+                                        (user.Level == config.MaxLevel ? "已升至最高等级！" : $"升级到下一级还需:{Utils.GetNextLevelExp(user.Level + 1) - user.Exp}"));
                                 }
                                 break;
                             case "choose":
@@ -472,8 +508,8 @@ namespace Legend
                                     user.Job = job;
                                     user.Level = 0;
                                     user.Exp -= config.Exp;
-                                    user.Damage = config.Jobs.ToList().Find(i => i.Name==user.Job).Damage;
-                                    user.Update("Job", "Level","Exp","Damage");
+                                    user.Damage = config.Jobs.ToList().Find(i => i.Name == user.Job).Damage;
+                                    user.Update("Job", "Level", "Exp", "Damage");
                                     args.Player.SendSuccessMessage("职业选择成功！");
                                 }
                                 break;
@@ -527,13 +563,13 @@ namespace Legend
                                             Stack = args.Player.TPlayer.inventory[index].stack,
                                             Prefix = args.Player.TPlayer.inventory[index].prefix
                                         };
-                                        if(sellItem.NetID <= 0 || sellItem.Stack <= 0)
+                                        if (sellItem.NetID <= 0 || sellItem.Stack <= 0)
                                         {
                                             args.Player.SendErrorMessage("您不能出售空物品！");
                                             return;
-                                        }   
+                                        }
                                         var price = new Item() { NetID = netid, Stack = stack };
-                                        var shop = new Shop() { Clan = user.Clan, Seller = args.Player.Name, SellItem = sellItem, Price = price};
+                                        var shop = new Shop() { Clan = user.Clan, Seller = args.Player.Name, SellItem = sellItem, Price = price };
                                         var list = Shop.Get(new Dictionary<string, object>() { { "Clan", user.Clan }, { "SoldOut", false } });
                                         list.Sort((x, y) => x.id.CompareTo(y.id));
                                         if (list[0].id == 0)
@@ -541,7 +577,7 @@ namespace Legend
                                             {
                                                 if (list[i].id - list[i - 1].id > 1)
                                                 {
-                                                    shop.id = list[i - 1].id+1;
+                                                    shop.id = list[i - 1].id + 1;
                                                     break;
                                                 }
                                             }
@@ -576,20 +612,20 @@ namespace Legend
                                                 args.Player.SendErrorMessage("背包中没有足够的物品以交易！");
                                                 return;
                                             }
-                                            Utils.DelItem(args.Player.Index,shop.Price);
+                                            Utils.DelItem(args.Player.Index, shop.Price);
                                             args.Player.GiveItem(shop.SellItem.NetID, shop.SellItem.Stack, shop.SellItem.Prefix);
                                             var plrs = TSPlayer.FindByNameOrID(shop.Seller);
-                                            if(plrs.Count == 0)
+                                            if (plrs.Count == 0)
                                             {
                                                 var plr = plrs[0];
-                                                plr.GiveItem(shop.Price.NetID,shop.Price.Stack);
+                                                plr.GiveItem(shop.Price.NetID, shop.Price.Stack);
                                                 shop.Delete("Clan", "id");
                                                 plr.SendSuccessMessage($"您的商品:{shop.SellItem}已售出，请查收！");
                                             }
                                             else
                                             {
                                                 shop.SoldOut = true;
-                                                shop.Update(key.Select(t=>t.Key).ToList(),"SoldOut");
+                                                shop.Update(key.Select(t => t.Key).ToList(), "SoldOut");
                                             }
                                             args.Player.SendSuccessMessage("商品已到账，请查收！");
                                         }
@@ -604,7 +640,7 @@ namespace Legend
                                 {
                                     if (user.GetClan() != null)
                                     {
-                                        int index=int.Parse(args.Parameters[2]);
+                                        int index = int.Parse(args.Parameters[2]);
                                         var key = new Dictionary<string, object>() { { "Clan", user.Clan }, { "id", index } };
                                         var list = Shop.Get(key);
                                         if (list.Count > 0)
@@ -678,7 +714,7 @@ namespace Legend
                                 args.Player.SendInfoMessage("/legend clan add 公会名称,创建公会");
                                 args.Player.SendInfoMessage("/legend clan join 公会名称, 加入公会");
                             }
-                            if (user.GetClan() != null&&!user.IsClanOwner())
+                            if (user.GetClan() != null && !user.IsClanOwner())
                             {
                                 args.Player.SendInfoMessage("/legend clan leave,离开公会");
                                 args.Player.SendInfoMessage("/legend clan state,查看公会状态");
@@ -704,7 +740,7 @@ namespace Legend
                                 {
                                     if (user.GetClan() != null)
                                     {
-                                        var clan=user.GetClan();
+                                        var clan = user.GetClan();
                                         args.Player.SendInfoMessage($"公会名称：{clan.Name}\n" +
                                             $"会长:{clan.Owner}\n" +
                                             $"成员:{string.Join(",", clan.Members)}\n" +
@@ -750,9 +786,9 @@ namespace Legend
                                 {
                                     if (user.IsClanAdmin())
                                     {
-                                        string prefix=args.Parameters[2];
-                                        var clan=user.GetClan();
-                                        clan.Prefix=prefix;
+                                        string prefix = args.Parameters[2];
+                                        var clan = user.GetClan();
+                                        clan.Prefix = prefix;
                                         clan.Update("Prefix");
                                         clan.Say(args.Player.Name + "已将公会聊天前缀更改为：" + prefix);
                                     }
@@ -821,7 +857,7 @@ namespace Legend
                                         clan.Admin.Remove(name);
                                         if (clan.RegionID != -1)
                                         {
-                                            var region=TShock.Regions.GetRegionByID(clan.RegionID);
+                                            var region = TShock.Regions.GetRegionByID(clan.RegionID);
                                             Data.Command($"update region set Owner={name} where RegionName={region.Name} and WorldID={region.WorldID}");
                                         }
                                         clan.Update("Admin", "Owner");
@@ -839,7 +875,7 @@ namespace Legend
                                     {
                                         string name = args.Parameters[2];
                                         var clan = user.GetClan();
-                                        if(!clan.Ban.Contains(name))
+                                        if (!clan.Ban.Contains(name))
                                         {
                                             args.Player.SendInfoMessage("该用户并未被封禁！");
                                             return;
@@ -879,7 +915,7 @@ namespace Legend
                                         clan.Members.Remove(name);
                                         clan.Admin.Remove(name);
                                         clan.Ban.Add(name);
-                                        clan.Update("Members", "Admin","Ban");
+                                        clan.Update("Members", "Admin", "Ban");
                                         if (clan.RegionID != -1)
                                         {
                                             var region = TShock.Regions.GetRegionByID(clan.RegionID);
@@ -923,7 +959,7 @@ namespace Legend
                                             var region = TShock.Regions.GetRegionByID(clan.RegionID);
                                             TShock.Regions.RemoveUser(region.Name, args.Player.Name);
                                         }
-                                        clan.Say(args.Player.Name+"已将"+name+"踢出公会！");
+                                        clan.Say(args.Player.Name + "已将" + name + "踢出公会！");
                                     }
                                     else
                                     {
@@ -993,7 +1029,7 @@ namespace Legend
                                             user.Update("Clan");
                                             args.Player.SendInfoMessage("公会创建成功！");
                                         }
-                                        catch(Exception ex)
+                                        catch (Exception ex)
                                         {
                                             Console.WriteLine(ex);
                                         }
@@ -1060,7 +1096,7 @@ namespace Legend
                                             {
                                                 if (Utils.Rate(p.RateUp, p.Rate, s.Item2))
                                                 {
-                                                    for(int i = 0; i < Random.Next(p.Num.Item1,p.Num.Item2+1); i++)
+                                                    for (int i = 0; i < Random.Next(p.Num.Item1, p.Num.Item2 + 1); i++)
                                                     {
                                                         if (p.Direct)
                                                         {

@@ -11,7 +11,9 @@
   <PropertyGroup />
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Z.Expressions.Eval" Version="4.0.92" />
+    <PackageReference Include="Z.Expressions.Eval" Version="4.0.92">
+      <GeneratePathProperty>False</GeneratePathProperty>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OTAPI">
