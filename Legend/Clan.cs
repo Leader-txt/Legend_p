@@ -38,7 +38,7 @@ namespace Legend
             {
                 MainPlugin.Users[s].Clan = String.Empty;
                 MainPlugin.Users[s].Update(new List<string>() { "Name" }, "Clan");
-                MainPlugin.Users[s].GetTSPlayer()?.SendInfoMessage($"[{Name}]公告:{text}");
+                MainPlugin.Users[s].GetTSPlayer()?.SendInfoMessage($"[{Name}]{(MainPlugin.English? "Broadcast" : "公告")}:{text}");
             }
         }
     }
