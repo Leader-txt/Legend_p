@@ -21,7 +21,7 @@ namespace Legend
         public static bool English => Language.ActiveCulture.LegacyId == 1;
         public override string Name => "Legend";
         public override string Description => English ? "Legend-A role play game plugin for TShock" : "传奇-RPG插件";
-        public override string Author => "Leader";
+        public override string Author => "Leader,Cai helped localization";
         public override Version Version => new Version(1, 1, 0, 0);
         #region GlobalValues
         public static Dictionary<string, User> Users = new Dictionary<string, User>();
