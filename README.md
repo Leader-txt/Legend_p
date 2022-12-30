@@ -14,8 +14,17 @@ A TShock plugin of role play game.
 弹幕，治疗和吸血<br>
 超高自由度！<br>
 公式算法全部可自定义！<br>
+# Note
+Do not forget put "Z.Expressions.Eval.dll" into 'bin' folder in your TShock root path.
 # 插件用法 The useage of the plugin
 稍后更新(不知道猴年马月)<br>
 The useage will be updated later(I don't know when will it come)<br>
-# Note
-Do not forget put "Z.Expressions.Eval.dll" into 'bin' folder in your TShock root path.
+## Commands
+### /legend
+Permission: legend.use<br>
+note: this command is used for common player.<br>
+useage: Execute this command in TShock to get useage.<br>
+### /legadm
+Permission: legend.admin<br>
+note: this command is used for server administrators<br>
+useage: Execute this command in TShock to get useage.<br>
