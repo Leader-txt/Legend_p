@@ -1,3 +1,5 @@
+# Notice
+Replace Eval.Execute as Eval.Compile can increase efficiency.
 # Legend_p
 A TShock plugin of role play game.
 # ¼ò½é
