@@ -37,6 +37,6 @@ jobs:
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       with:
         prerelease: true
-        tag_name: ${{ steps.build.outputs.TAG_NAME }}
-        name: Release ${{ steps.build.outputs.TAG_NAME }}
+        tag_name: release
+        name: Release
         files: Legend/bin/Debug/net6/Legend.dll
