@@ -24,10 +24,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: tree
-      run: tree
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.2
       with: 
         name: release
-        path: Legend_p/bin/Debug/net6/Legend.dll
+        path: Legend/bin/Debug/net6/Legend.dll
