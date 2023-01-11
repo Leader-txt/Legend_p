@@ -29,3 +29,6 @@ jobs:
       with: 
         name: release
         path: Legend_p/bin/Debug/net6/Legend.dll
+        if-no-files-found: |
+          warn
+          tree
