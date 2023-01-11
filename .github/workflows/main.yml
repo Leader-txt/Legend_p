@@ -23,7 +23,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: |
+        dotnet build --no-restore
+        echo "TAG_NAME=v$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.2
       with: 
