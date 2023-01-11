@@ -28,4 +28,4 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       with: 
         name: release
-        path: Legend_p/bin/Debug/net6.0
+        path: Legend_p/bin/Debug/net6/Legend.dll
