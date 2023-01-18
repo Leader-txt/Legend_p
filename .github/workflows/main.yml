@@ -23,9 +23,20 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      id: build
+      run: |
+        dotnet build --no-restore
+        echo "TAG_NAME=v$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.2
       with: 
         name: release
-        path: Legend_p/bin/Debug/net6.0
+        path: Legend/bin/Debug/net6/Legend.dll
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      with:
+        prerelease: true
+        tag_name: release
+        name: Release
+        files: Legend/bin/Debug/net6/Legend.dll
