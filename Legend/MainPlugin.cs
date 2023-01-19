@@ -30,7 +30,6 @@ namespace Legend
         #endregion
         public MainPlugin(Main game) : base(game)
         {
-            Config.GetConfig();
             //ReleaseDLL();
         }
         void ReleaseDLL()
@@ -49,6 +48,7 @@ namespace Legend
         }
         public override void Initialize()
         {
+            Config.GetConfig();
             Commands.ChatCommands.Add(new Command("legend.use", cmd, "legend"));
             Commands.ChatCommands.Add(new Command("legend.admin", admin, "legadm"));
             ServerApi.Hooks.GamePostInitialize.Register(this, OnGamePostinit);
